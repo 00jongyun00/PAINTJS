@@ -1,13 +1,22 @@
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext("2d");
+const colors = document.getElementsByClassName("jsColor");
+const range = document.getElementById("jsRange");
+const mode = document.getElementById("jsMode");
 
-canvas.width = document.getElementsByClassName("canvas")[0].offsetWidth;
-canvas.height = document.getElementsByClassName("canvas")[0].offsetHeight;
+// default set value
+const INITIAL_COLOR = "#2c2c2c";
+const CANVAS_WIDTH = document.getElementsByClassName("canvas")[0].offsetWidth;
+const CANVAS_HEIGHT = document.getElementsByClassName("canvas")[0].offsetHeight;
 
-ctx.strokeStyle = "#2c2c2c";
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
+ctx.strokeStyle = INITIAL_COLOR;
+ctx.fillStyle = INITIAL_COLOR;
 ctx.lineWidth = 2.5;
 
 let painting = false;
+let filling = false;
 
 function stopPainting() {
   painting = false;
@@ -22,21 +31,16 @@ function onMouseMove(event) {
   const x = event.offsetX;
   const y = event.offsetY;
 
-	if(!painting){
-		// 마우스 가 움직이는동안 moveTo 로 점이 계속 가있음
-		// painting 이 true 가 되는 순간 moveTo(x, y)
-		// 위치에서 lineTo(x, y) 위치로 선을 그음
-		ctx.beginPath();
-		ctx.moveTo(x, y);
-	} else {
-		ctx.lineTo(x, y);
-		ctx.stroke();
-	}
-}
-
-function onMouseDown(event) {
-  // 마우스 클릭
-  painting = true;
+  if (!painting) {
+    // 마우스 가 움직이는동안 moveTo 로 점이 계속 가있음
+    // painting 이 true 가 되는 순간 moveTo(x, y)
+    // 위치에서 lineTo(x, y) 위치로 선을 그음
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  } else {
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
 }
 
 function onMouseUp(event) {
@@ -44,9 +48,51 @@ function onMouseUp(event) {
   stopPainting();
 }
 
+function handleColorClick(event) {
+  const color = event.target.style.backgroundColor;
+  console.log(color);
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+}
+
+function handleRangeChange(event) {
+  const size = event.target.value;
+  ctx.lineWidth = size;
+}
+
+function handleModeClick() {
+  if (filling === true) {
+    filling = false;
+    mode.innerText = "Fill";
+  } else {
+    filling = true;
+    mode.innerText = "paint";
+    ctx.fillStyle = ctx.strokeStyle;
+  }
+}
+
+function handleCanvasClick() {
+  if (filling) {
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
 if (canvas) {
   canvas.addEventListener("mousemove", onMouseMove);
   canvas.addEventListener("mousedown", startPainting);
   canvas.addEventListener("mouseup", stopPainting);
   canvas.addEventListener("mouseleave", stopPainting);
+  canvas.addEventListener("click", handleCanvasClick);
+}
+
+Array.from(colors).forEach((color) =>
+  color.addEventListener("click", handleColorClick)
+);
+
+if (range) {
+  range.addEventListener("input", handleRangeChange);
+}
+
+if (mode) {
+  mode.addEventListener("click", handleModeClick);
 }
