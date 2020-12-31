@@ -1,3 +1,7 @@
 ### 바닐라 자바스크립트를 이용한 그림판
 
-- start 2020-12-30 ing..
+- 바닐라 자바스크립트
+- HTML canvas
+- reset css
+
+drawing, fill, save, brush size (+, -)
